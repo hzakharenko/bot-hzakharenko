@@ -13,9 +13,16 @@ response = requests.post(url)
 #print(response.status_code)
 #print(response.json())
 response_json = response.json()
-print(response_json.keys())
 #print(response_json)
 
+
+
+with open("sample.json") as jsonFile:
+    data = json.load(jsonFile)
+    jsonData = data["data"]["meta"]
+    for x in jsonData:
+        keys = x.keys()
+        print(keys)
 
 #while response_json['meta']['next'] in response_json:
 
