@@ -9,10 +9,20 @@ import time
 options = Options()
 options.headless = True
 driver = webdriver.Chrome("/usr/bin/chromedriver", options=options)
-driver.get("https://opendata.dc.gov/search?sort=-modified")
-time.sleep(15)
-#button = driver.find_elements(By.CLASS_NAME, "btn more-results link-color-primary")
-#button = driver.find_elements("xpath", '//*[@id="ember120"]/button[1]')
+driver.get("https://opendata.dc.gov/search?collection=Dataset&sort=-modified")
+time.sleep(2)
+#test to find something else
+item = driver.find_element(By.CLASS_NAME, "title")
+print(item)
+print(item.text)
+
+
+#button = driver.find_element(By.CLASS_NAME, "btn more-results link-color-primary") #.click()
+#time.sleep(5)
+button = driver.find_element(By.XPATH, '/html/body/div[7]/div[2]/div/div[1]/div[3]/div/div/div/div[2]/div[2]/div/button[1]').click()
+print(button.text)
+#button = driver.find_element(By.XPATH, "//*[contains(text(), 'More Results')]")
+
 #button.click()
 
 plain_text = driver.page_source

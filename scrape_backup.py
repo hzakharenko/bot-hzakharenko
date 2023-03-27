@@ -45,7 +45,7 @@ print(len(df))
 options = Options()
 options.headless = True
 driver = webdriver.Chrome("/usr/bin/chromedriver", options=options)
-driver.get("https://opendata.dc.gov/search?sort=-modified")
+driver.get("https://opendata.dc.gov/search?collection=Dataset&sort=-modified")
 time.sleep(15)
 #button = driver.find_elements(By.CLASS_NAME, "btn more-results link-color-primary")
 #button = driver.find_elements("xpath", '//*[@id="ember120"]/button[1]')
@@ -55,10 +55,16 @@ plain_text = driver.page_source
 soup = BeautifulSoup(plain_text, 'lxml')
 
 #To get this line, I asked ChatGPT: "how do i capture data-test="metadata-col-1-item-1" with beautiful soup in python"
-items = soup.find_all(attrs={"data-test": "metadata-col-1-item-1"})
+titles = soup.find_all(attrs={"data-test": "list-card-title"})
+pg_date_updated = soup.find_all(attrs={"data-test": "metadata-col-1-item-1"})
 
-for item in items:
-    print(item.text.strip())
+#print all the titles of the datasets on a page
+for title in titles:
+    print(title.text.strip())
+
+#print all the date updates on a page
+for date_updated in pg_date_updated:
+    print(date_updated.text.strip())
 
 driver.quit()
 
