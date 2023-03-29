@@ -32,11 +32,33 @@ for entry in feed.entries:
     })
 
 # create a dataframe from the list of dictionaries
-df = pd.DataFrame(articles)
+rss_df = pd.DataFrame(articles)
 
 # print the dataframe
-print(df.head())
-print(len(df))
+#print(rss_df.head())
+#print(len(rss_df))
+#rss_df.to_csv('rss_df.csv', index=False)
+
+#read in original rss_df
+original_rss = pd.read_csv('original_rss.csv')
+
+#if the length of the rss_df is longer than length of rss_df.csv: to get this, I used some lines from the question I asked chatGPT: scrape and create dataframe every day using beautiful soup, but retain whats already there and only include new rows
+if len(rss_df) > len(original_rss):
+    new_datasets = len(rss_df) - len(original_rss)
+    print(f"There has been an update to the RSS feed! There were {new_datasets} new datasets published.")
+
+    # Get the latest date in the existing DataFrame
+    latest_date = pd.to_datetime(original_rss['published'].iloc[-1])
+
+    # Filter the new DataFrame to keep only rows with a date greater than the latest date in the existing DataFrame
+    rss_df = rss_df[pd.to_datetime(rss_df['published']) > latest_date]
+
+    # Append the new DataFrame to the existing DataFrame
+    original_rss = original_rss.append(rss_df, ignore_index=True)
+
+    # Save the updated DataFrame to a CSV file
+    original_rss.to_csv('original_rss.csv', index=False)
+
 
 #Pull new documents by grabbing Date_updated to add to dataframe with BeautifulSoup
 
@@ -64,6 +86,25 @@ for title in titles:
 #print all the date updates on a page
 for date_updated in pg_date_updated:
     print(date_updated.text.strip())
+
+#create a dataframe with the values scraped: to get this I asked chatGPT: Scrape all titles and dates in a html page using beautiful soup and turn that into a dataframe
+data = []
+for title, date_updated in zip(titles, pg_date_updated):
+    data.append({'title': title.text.strip(), 'date_updated': date_updated.text.strip()})
+daily_updates_df = pd.DataFrame(data)
+print(daily_updates_df)
+
+#join this to the RSS dataframe by title
+final_df = rss_df.merge(daily_updates_df, on='title', how='left')
+print(final_df)
+
+#TO DO
+    #update code so it only adds new records, not overwriting it
+    #set Slack bot to report any new rows (where date_updated = today)
+    #yaml file to run every day
+
+
+
 
 driver.quit()
 
