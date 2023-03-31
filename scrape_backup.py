@@ -12,8 +12,9 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
 
-
-#Create a daataframe of all documents in Open_Data_DC
+###
+# Create a dataframe of all documents in Open_Data_DC
+###
 
 # define RSS feed URL
 rss_url = 'https://datahub-dc-dcgis.hub.arcgis.com/api/feed/rss/2.0'
@@ -33,17 +34,16 @@ for entry in feed.entries:
 
 # create a dataframe from the list of dictionaries
 rss_df = pd.DataFrame(articles)
-
-# print the dataframe
-#print(rss_df.head())
-#print(len(rss_df))
-#rss_df.to_csv('final_df.csv', index=False)
+rss_df['published'] = pd.to_datetime(rss_df['published'])
+rss_df = rss_df.sort_values(by='published', ascending=True)
 
 #read in original rss_df
 original_rss = pd.read_csv('final_df.csv')
+print(len(original_rss))
 
 #if the length of the rss_df is longer than length of rss_df.csv: to get this, I used some lines from the question I asked chatGPT: scrape and create dataframe every day using beautiful soup, but retain whats already there and only include new rows
 if len(rss_df) > len(original_rss):
+    #calculate how many new entries were added and print note
     new_datasets = len(rss_df) - len(original_rss)
     print(f"There has been an update to the RSS feed! There were {new_datasets} new datasets published.")
 
@@ -78,14 +78,6 @@ soup = BeautifulSoup(plain_text, 'lxml')
 titles = soup.find_all(attrs={"data-test": "list-card-title"})
 pg_date_updated = soup.find_all(attrs={"data-test": "metadata-col-1-item-1"})
 
-# #print all the titles of the datasets on a page
-# for title in titles:
-#     print(title.text.strip())
-
-# #print all the date updates on a page
-# for date_updated in pg_date_updated:
-#     print(date_updated.text.strip())
-
 #create a dataframe with the values scraped: to get this I asked chatGPT: Scrape all titles and dates in a html page using beautiful soup and turn that into a dataframe
 data = []
 for title, date_updated in zip(titles, pg_date_updated):
@@ -101,8 +93,37 @@ print(final_df)
 # Save the final DataFrame to a CSV file
 final_df.to_csv('final_df.csv', index=False)
 
+
+###
+# Report new updates to datasets using Slack bot
+###
+
+#Set latest date -- filter for it in dataframe -- if length > 0, send message
+#Set values to
+# number of datasets updated
+# report all values from this row in original_rss --> in a bulleted list
+
+msg = f""""There have been updates to data from Open Data DC. There were {num}
+ datasets updated:
+ {title}, {link}, {description}, {date_updated}, {date_published}
+ """
+
+
+if value > 0:
+    try:
+        response = client.chat_postMessage(
+            channel="slack-bots",
+            text=msg,
+            unfurl_links=True, 
+            unfurl_media=True
+        )
+        print("success!")
+    except SlackApiError as e:
+        assert e.response["ok"] is False
+        assert e.response["error"]
+        print(f"Got an error: {e.response['error']}")
+
 #TO DO
-    #update code so it only adds new records, not overwriting it
     #set Slack bot to report any new rows (where date_updated = today)
     #yaml file to run every day
 
