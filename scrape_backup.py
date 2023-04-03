@@ -11,6 +11,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import time
+import datetime
 
 ###
 # Create a dataframe of all documents in Open_Data_DC
@@ -99,14 +100,22 @@ final_df.to_csv('final_df.csv', index=False)
 ###
 
 #Set latest date -- filter for it in dataframe -- if length > 0, send message
+current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+
+new_rows = final_df[final_df['date_updated'] == current_date]
 #Set values to
 # number of datasets updated
 # report all values from this row in original_rss --> in a bulleted list
+if len(new_rows) > 0:
+    bullet_list = "- link: " + new_rows["link"] + ", title: " + new_rows["title"] + ", description: " + new_rows["description"] + ", published: " + new_rows["published"] +"\n"
+    bullet_list = bullet_list.to_list()
+    bullet_list = "".join(bullet_list)
 
-msg = f""""There have been updates to data from Open Data DC. There were {num}
- datasets updated:
- {title}, {link}, {description}, {date_updated}, {date_published}
- """
+msg = f"There have been {len(new_rows)} new rows added to your dataframe:\n{bullet_list}"
+
+#set up Slack token stuff
+slack_token = os.environ.get('SLACK_API_TOKEN')
+client = WebClient(token=slack_token)
 
 
 if value > 0:
@@ -130,7 +139,3 @@ if value > 0:
 
 driver.quit()
 
-"""Wed 3-29 update: Worked to get dataframess to update only when there is
-new information to the saved csv. Next steps: Confirm this is working properly, 
-then set up Slack bot to send a message if there are new updates.Then, set up
-yaml code to run this file every day"""
