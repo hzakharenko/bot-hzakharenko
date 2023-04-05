@@ -1,5 +1,3 @@
-#apt-get update
-#apt install chromium-chromedriver
 import csv
 import requests
 import json
@@ -15,10 +13,6 @@ import datetime
 import os
 from slack import WebClient
 from slack.errors import SlackApiError
-
-###
-# Create a dataframe of all documents in Open_Data_DC
-###
 
 # define RSS feed URL
 rss_url = 'https://datahub-dc-dcgis.hub.arcgis.com/api/feed/rss/2.0'
@@ -38,13 +32,13 @@ for entry in feed.entries:
 
 # create a dataframe from the list of dictionaries
 rss_df = pd.DataFrame(articles)
+
+#sort by date of published so that most recent date is last
 rss_df['published'] = pd.to_datetime(rss_df['published'])
 rss_df = rss_df.sort_values(by='published', ascending=True)
+print(len(rss_df))
 
-#read in original rss_df
 original_rss = pd.read_csv('final_df.csv')
-print(len(original_rss))
-
 #if the length of the rss_df is longer than length of rss_df.csv: to get this, I used some lines from the question I asked chatGPT: scrape and create dataframe every day using beautiful soup, but retain whats already there and only include new rows
 if len(rss_df) > len(original_rss):
     #calculate how many new entries were added and print note
@@ -90,30 +84,26 @@ daily_updates_df = pd.DataFrame(data)
 print(daily_updates_df)
 
 #join this to the RSS dataframe by title
-final_df = original_rss.merge(daily_updates_df, on='title', how='left')
-print(final_df)
+#final_df = original_rss.merge(daily_updates_df, on='title', how='left')
+final_df = pd.merge(original_rss, daily_updates_df, on='title', how='left')
 
-
-# Save the final DataFrame to a CSV file
-final_df.to_csv('final_df.csv', index=False)
-
-
-###
-# Report new updates to datasets using Slack bot
-###
+#print(final_df)
 
 #Set latest date -- filter for it in dataframe -- if length > 0, send message
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+print(current_date)
 
 #create a date column from final df with just date updated
-final_df['date_updated_y'] = pd.to_datetime(final_df['date_updated_x'], format='%B %d, %Y')
+final_df['date'] = pd.to_datetime(final_df['date_updated'], format='%B %d, %Y')
 
-final_df['date'] = final_df['date_updated_y'].dt.date
+final_df['date'] = final_df['date'].dt.date.astype(str)
+
+df_filtered = final_df.dropna(subset=['date'], how='any')
+print(df_filtered)
 
 new_rows = final_df[final_df['date'] == current_date]
-#Set values to
-# number of datasets updated
-# report all values from this row in original_rss --> in a bulleted list
+print(new_rows)
+
 if len(new_rows) > 0:
     bullet_list = "- link: " + new_rows["link"] + ", title: " + new_rows["title"] + ", description: " + new_rows["description"] + ", published: " + new_rows["published"] +"\n"
     bullet_list = bullet_list.to_list()
@@ -151,12 +141,3 @@ else:
             assert e.response["ok"] is False
             assert e.response["error"]
             print(f"Got an error: {e.response['error']}")
-
-
-#TO DO
-    #set Slack bot to report any new rows (where date_updated = today)
-    #yaml file to run every day
-
-
-driver.quit()
-
