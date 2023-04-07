@@ -108,7 +108,7 @@ print(df_filtered)
 
 new_rows = final_df[final_df['date'] == current_date]
 print(new_rows)
-url = "https://github.com/NewsAppsUMD/bot-hzakharenko/blob/main/final_df.csv"
+url = "https://github.com/NewsAppsUMD/bot-hzakharenko/blob/main/new_rows.csv"
 
 if len(new_rows) > 0:
     #bullet_list = "- title: " + new_rows["title"]+"\n"
