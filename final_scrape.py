@@ -85,28 +85,29 @@ print(daily_updates_df)
 
 #join this to the RSS dataframe by title
 #final_df = original_rss.merge(daily_updates_df, on='title', how='left')
-final_df = pd.merge(original_rss, daily_updates_df, on='title', how='left')
+#final_df = pd.merge(original_rss, daily_updates_df, on='title', how='left')
+original_rss.update(daily_updates_df)
+print(original_rss)
 
 # Save the final DataFrame to a CSV file
-final_df.to_csv('final_df.csv', index=False)
+original_rss.to_csv('final_df.csv', index=False)
 
 ###
 # Report new updates to datasets using Slack bot
 ###
-
 #Set latest date -- filter for it in dataframe -- if length > 0, send message
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
 print(current_date)
 
 #create a date column from final df with just date updated
-final_df['date'] = pd.to_datetime(final_df['date_updated'], format='%B %d, %Y')
+original_rss['date'] = pd.to_datetime(original_rss['date_updated'], format='%B %d, %Y')
 
-final_df['date'] = final_df['date'].dt.date.astype(str)
+original_rss['date'] = original_rss['date'].dt.date.astype(str)
 
-df_filtered = final_df.dropna(subset=['date'], how='any')
+df_filtered = original_rss.dropna(subset=['date'], how='any')
 print(df_filtered)
 
-new_rows = final_df[final_df['date'] == current_date]
+new_rows = original_rss[original_rss['date'] == current_date]
 print(new_rows)
 url = "https://github.com/NewsAppsUMD/bot-hzakharenko/blob/main/new_rows.csv"
 
