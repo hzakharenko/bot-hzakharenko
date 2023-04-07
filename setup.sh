@@ -10,3 +10,4 @@ pip install datetime
 pip install os
 pip install slack
 pip install slackclient
+pip install lxml
