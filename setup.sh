@@ -1,4 +1,12 @@
-pip install sqlite-utils
-pip install datasette
-sqlite-utils insert open_data_dc.db datasets final_df.csv --csv
-datasette serve open_data_dc.db
+pip install csv
+pip install requests
+pip install json
+pip install bs4
+pip install feedparser
+pip install pandas
+pip install selenium
+pip install time
+pip install datetime
+pip install os
+pip install slack
+pip install slackclient

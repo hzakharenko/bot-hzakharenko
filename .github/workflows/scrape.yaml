@@ -19,7 +19,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install dependencies
-        run: pip install requests bs4
+        run: bash setup.sh
 
       - name: run scraper
         run: python final_scrape.py
