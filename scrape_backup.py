@@ -95,7 +95,7 @@ print(final_df)
 
 
 # Save the final DataFrame to a CSV file
-final_df.to_csv('final_df.csv', index=False)
+#final_df.to_csv('final_df.csv', index=False)
 
 
 ###
@@ -115,7 +115,7 @@ new_rows = final_df[final_df['date'] == current_date]
 # number of datasets updated
 # report all values from this row in original_rss --> in a bulleted list
 if len(new_rows) > 0:
-    bullet_list = "- link: " + new_rows["link"] + ", title: " + new_rows["title"] + ", description: " + new_rows["description"] + ", published: " + new_rows["published"] +"\n"
+    bullet_list = "- link: " + new_rows["link"] + ", title: " + new_rows["title"]+"\n"
     bullet_list = bullet_list.to_list()
     bullet_list = "".join(bullet_list)
     msg = f"There have been {len(new_rows)} new rows added to your dataframe:\n{bullet_list}"

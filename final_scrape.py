@@ -87,7 +87,12 @@ print(daily_updates_df)
 #final_df = original_rss.merge(daily_updates_df, on='title', how='left')
 final_df = pd.merge(original_rss, daily_updates_df, on='title', how='left')
 
-#print(final_df)
+# Save the final DataFrame to a CSV file
+final_df.to_csv('final_df.csv', index=False)
+
+###
+# Report new updates to datasets using Slack bot
+###
 
 #Set latest date -- filter for it in dataframe -- if length > 0, send message
 current_date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -103,12 +108,14 @@ print(df_filtered)
 
 new_rows = final_df[final_df['date'] == current_date]
 print(new_rows)
+url = "https://github.com/NewsAppsUMD/bot-hzakharenko/blob/main/final_df.csv"
 
 if len(new_rows) > 0:
-    bullet_list = "- link: " + new_rows["link"] + ", title: " + new_rows["title"] + ", description: " + new_rows["description"] + ", published: " + new_rows["published"] +"\n"
-    bullet_list = bullet_list.to_list()
-    bullet_list = "".join(bullet_list)
-    msg = f"There have been {len(new_rows)} new rows added to your dataframe:\n{bullet_list}"
+    #bullet_list = "- title: " + new_rows["title"]+"\n"
+    #bullet_list = bullet_list.to_list()
+   # bullet_list = "".join(bullet_list)
+   new_rows.to_csv('new_rows.csv', index=False)
+   msg = f"There have been {len(new_rows)} new rows datasets updated today! See more: {url}"
 
 #set up Slack token stuff
 slack_token = os.environ.get('SLACK_API_TOKEN')
