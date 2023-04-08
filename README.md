@@ -1,14 +1,16 @@
 # bot-hzakharenko
 
-### March 31 update
-This week, I finished setting up the web scraping portion of the bot. I was able to use Selenium to load the webpage and push the "More Results" button so that I can scrape the date_updated for the 40 most recently updated datasets every day.
+### Final bot submission update (4/8/23)
+This week, I worked towards the final steps of my bot. Since I had spent the last week finalizing how I was scraping the information, this week I focused on making sure my code could run and update every day, setting up a Slack message to best communicate this information, and setting up a YAML file to run this code through Github actions once a day.
 
-The next thing I did was set up my code to load in the original csv file (from the initial run of the RSS feed) and only add to it when there are new things. Since I need to scrape the RSS feed to get information about datasets when they are published, I saved an initial file, and then I will scrape the RSS feed every day and append rows where the published date is later than the latest date in the saved csv file, effectively only saving new items when they are added.
+Through this process, I learned that the initial format I had set up for my message (reporting each new row's information-- including date published, title, link, and description) was too much because sometimes I could be reporting 40 new rows of information. I also noticed that even just putting the titles made the message look too long. So, I decided I would just report the number of new updates in the Slack message and link to a dataframe showing the new rows. Ideally, I would want this to be a datasette, but I didn't have the time to set that up and figure out how to get a link to share, so for now, I linked it to a searchable dataframe in Github. Another issue I found was that one day, I noticed that there were 60+ new datasets updated, and the max I am scraping right now is 40. 
 
-I also set it up so that my smaller dataframe with 40 titles and date_updated columns dates joins with the rss_feed so that I can slowly build a csv that includes both date published and the date updated.
+Looking foward, if this bot were able to take input from users, I would want users to be able to query the bot on the types of datasets that had been updated. I know that these datasets are categorized on the website, and if I can obtain the metadata for this to add to what I already have, it would be very helpful for users to be able to ask questions like "Was there anything updated on transportation?" and for the bot to spit out the titles of any new datasets that were put in this category.
 
-Up next, I need to set up a Slack bot to send me a message if there is a date_updated in this dataframe that is equal to today's date. I want this message to deliver to me the number of datasets updated, and then a bulleted list with all of the information from that row in the dataframe (link, title, description, published data, and date updated).
+I also had issues figuring out how to best update my data. I ran into some confusing errors that were making new date_updated columns instead of overriding the information I had in the column already, so I moved to use .update() instead of a join. However, this method might introduce different errors.
 
-Once I have my Slack bot set up, the last step is to set up a yaml file in Github to run the file every day, so that my Slack bot can update me daily if there are new datasets updated.
+Lastly, I worked on adding a YAML file to my GitHub and getting it to run. While the YAML file successfully runs on schedule, it gets a "not_authed" error for Slack, even though I put my auth code in the actions repo environment. 
 
-I think that I am on track to complete my bot by the end of next week. I want to keep the Slack bot message simple right now, but over time, I can consider adding more details or tailoring what I scrape to something specific if I find the results I am getting not useful.
+Overall, I spent this week thinking I was adding finishing touches and running into many more problems than I had in weeks past. However, it was fun to create workarounds for things that I thought were going to work up until the last minute, and I plan to continue working on this until my bot runs successfully, because I think the information it provides is very helpful to me and others.
+
+I think that in the next week, I should be able to clean my code and fix up my YAML file issues (if possible) to get my code to run daily. I plan to move on to a different task for the final project instead of continuing to improve upon my bot.
