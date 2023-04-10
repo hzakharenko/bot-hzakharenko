@@ -23,6 +23,8 @@ jobs:
 
       - name: run scraper
         run: python final_scrape.py
+        env:
+          SLACK_API_TOKEN: ${{ secrets.SLACK_API_TOKEN }}
 
       - name: "Commit and push if it changed"
         run: |-
