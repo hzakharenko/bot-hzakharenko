@@ -1,7 +1,9 @@
 # Quirks with Selenium and using it in Codespaces
 ## The Python library is great for web scraping and yes, you can scrape it using cloud-based development tools. Here’s what to know before you get started.
+![Rss](https://img.shields.io/badge/rss-F88900?style=for-the-badge&logo=rss&logoColor=white) ![Google Chrome](https://img.shields.io/badge/Google%20Chrome-4285F4?style=for-the-badge&logo=GoogleChrome&logoColor=white) ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54) ![Selenium](https://img.shields.io/badge/-selenium-%43B02A?style=for-the-badge&logo=selenium&logoColor=white) ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white) 
 
 **By Hanna Zakharenko**
+
 
 ## The Problem
 When I was tasked with making a bot for a project in my news applications class, I wanted to create a bot that scraped a local source of data, [OpenDataDC](https://opendata.dc.gov/). As a data journalist, I am always looking for new pitches that originate from government databases, which are often filled with stories that might otherwise slip through the cracks. 
