@@ -18,31 +18,33 @@ The only place I could find this information on the site was on [the detail card
 
 ![Card view of OpenDataDC website.](images/card_view.png)
 
-I started hunting around the site using developer tools to see if there was a JSON file or any other source of data that loaded into the site to present the information. I found a [load of JSON]() that included all information on that page and also held the information within each dataset. After formatting it and observing it, it seemed too difficult to parse and get the specific information I wanted. 
+I started hunting around the site using developer tools to see if there was a JSON file or any other source of data that loaded into the site to present the information. I found a [load of JSON](https://github.com/NewsAppsUMD/bot-hzakharenko/blob/main/ignore/sample.json) that included all information on that page and also held the information within each dataset. After formatting it and observing it, it seemed too difficult to parse and get the specific information I wanted. 
 
-So instead, I decided I’d scrape the website using [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) But when I found the unique identifier I’d need to grab and wrote some code to grab it for me, it couldn’t find anything. I learned that this is because OpenDataDC is a website that runs on ArcGIS and loads a lot of Javascript and JSON onto a webpage to gather and display. This takes a hot second to load and this information isn’t stored in the original page source, so I’d need to wait for the web page to load before I could scrape it.
+So instead, I decided I’d scrape the website using [BeautifulSoup](https://www.crummy.com/software/BeautifulSoup/bs4/doc/) But when I found the unique identifier I’d need to grab and wrote some code to grab it for me, it couldn’t find anything. I learned that this is because OpenDataDC is a website that runs on [ArcGIS](arcgis.com/index.html) and loads a lot of Javascript and JSON onto a webpage to gather and display. This takes a hot second to load and this information isn’t stored in the original page source, so I’d need to wait for the web page to load before I could scrape it.
 
 Since I can’t do that with BeautifulSoup alone, I needed to incorporate [Selenium](https://www.selenium.dev/) to wait for my web page to load before scraping. Selenium would also give me the ability to click that “Load More” button in case I wanted to gather more than 20 new datasets every day.
 
 ## Setting up Selenium on Codespaces
-Since I was working on my project in Codespaces, I was tasked with setting up Selenium in Codespaces as well. The reason this is more complicated than it seems is that Selenium requires you to install a browser driver for Selenium to work off of. When working in a cloud-based development environment, it is a little hard to tell where things are being installed, because it isn’t your computer. I found it tricky to find the file path for the browsers I installed and tried looking online for solutions.
+Since I was working on my project in Codespaces, I was tasked with setting up Selenium in Codespaces as well. The reason this is more complicated than it seems is that Selenium requires you to [install a browser driver](https://www.selenium.dev/documentation/webdriver/getting_started/) for Selenium to work off of. When working in a cloud-based development environment, it is a little hard to tell where things are being installed, because it isn’t your computer. I found it tricky to find the file path for the browsers I installed and tried looking online for solutions.
 
-I ended up closely following this tutorial in a sea of online blogs that walks you through how to set up Chrome with Selenium in Python on a virtual machine (a.k.a. Codespaces).
+I ended up closely following [this tutorial](https://www.keeganleary.com/setting-up-chrome-and-selenium-with-python-on-a-virtual-private-server-digital-ocean/) in a sea of online blogs that walks you through how to set up Chrome with Selenium in Python on a virtual machine (a.k.a. Codespaces).
 
 This tutorial downloads the web driver to your local machine and then downloads it on your virtual machine. It provides command lines to enter to adjust the settings and permissions to make your driver work.
 
 ## Selecting buttons with Selenium
-Once Selenium was installed and set up, I found it relatively easy to grab the “Date Updated” metadata from BeautifulSoup by having Selenium open the page and wait a couple of seconds before scraping. However, I wanted to grab more than 20 datasets at a time, since there were regularly 20+ datasets updated per day. Therefore, I thought I’d try to click the button using the same method, grab it from a unique selector and click it. Selenium had a tool designed for this, `driver.find_elements()`. 
+Once Selenium was installed and set up, I found it relatively easy to grab the “Date Updated” metadata from BeautifulSoup by having Selenium open the page and wait a couple of seconds before scraping. However, I wanted to grab more than 20 datasets at a time, since there were regularly 20+ datasets updated per day. Therefore, I thought I’d try to click the button using the same method, grab it from a unique selector and click it. [Selenium had a tool](https://selenium-python.readthedocs.io/locating-elements.html) designed for this, `driver.find_elements()`. 
 
-But Selenium could not find my button using the button’s unique class. So, I tried to grab it from the parent element, which didn’t work either. I also tried using the relative xpath, but that returned no results as well. At this point, I was very frustrated that Selenium couldn’t find this button, so I went to my good friend ChatGPT to ask a question:
+But Selenium could not find my button using the button’s unique class. So, I tried to grab it from the parent element, which didn’t work either. I also tried using the [relative xpath](https://www.w3schools.com/xml/xml_xpath.asp), but that returned no results as well. At this point, I was very frustrated that Selenium couldn’t find this button, so I went to my good friend [ChatGPT](https://chat.openai.com/) to ask a question:
 
 "I'm trying to find a button element on a webpage using Selenium and Python. It has a unique class name and xpath, and I've tried to find the element using both of these methods, but it can't find it. What other workarounds are there?"
 
-The workarounds that ChatGPT suggested were to wait longer, wait until the button was clickable or appeared on the webpage, find the element by ID, use the xpath, or try switching to an iframe (in case the element I was looking for was inside an iframe). 
+![View of ChatGPT response to question.](images/chatgpt.png)
+
+The workarounds that ChatGPT suggested were to wait longer, wait until the button was clickable or appeared on the webpage, find the element by ID, use the xpath, or try switching to an iframe. 
 
 After trying all of these methods, I eventually put in the full xpath instead of the relative xpath, and Selenium was finally able to find the button.
 
-![Card view of OpenDataDC website.](images/solution_code.png)
+![Code that solved the problem I was having.](images/solution_code.png)
 
 ## Conclusion
 I'm still not entirely sure why this was the only solution for me to find the button, but I learned a problem-solving process for something when you are certain that your code is right and it still isn’t working.
